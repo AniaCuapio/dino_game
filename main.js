@@ -25,10 +25,12 @@ let images = {
     "../img/mariposa-azul-derecha.png",
   lives: "../img/egg.png",
 };
+
 let interval; // si queremos apagar
 let frames = 0; // siempre queremos contar
 let enemies = [];
 let friends = [];
+let score = 5;
 
 // Clases
 class GameItem {
@@ -159,6 +161,14 @@ backg.draw = function () {
 
 // Main functions
 function start() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = "40px 'Press Start 2P'";
+  ctx.fillStyle = "#02F9FD";
+  ctx.fillText("**Dino Game**", 140, 100);
+  ctx.font = "25px 'Press Start 2P'";
+  ctx.fillStyle = "#FEFC2D";
+  ctx.fillText("Press Enter to start", 160, 150);
   interval = setInterval(update, 1000 / 60);
 }
 
@@ -172,7 +182,7 @@ function update() {
   // redibujamos cada uno de los elementos del videjuego (instancias) <-- regla
   backg.draw();
   dino.draw();
-
+  drawScore();
   // si lo quiero en mi videojuego lo tengo que meter a update
   drawMeteos();
   drawMeteos2();
@@ -237,9 +247,10 @@ function drawMeteos() {
 function checkCollition() {
   enemies.forEach((m) => {
     if (dino.crashWith(m)) {
-      // --score;
-      stop();
-      // function aux restarle la vida y probar un que se vuelva esqueleto
+      score = score - 1;
+      if (score === 0) {
+        stop();
+      }
     }
   });
 }
@@ -278,7 +289,11 @@ function drawPerson2() {
 function checkCollitionFriend() {
   friends.forEach((p) => {
     if (dino.crashWith(p)) {
-      //stop(); // function aux restarle la vida y probar un brillo
+      score = score + 1;
+      if (score === 0) {
+        stop();
+      }
+      //stop();
     }
   });
 }
@@ -295,15 +310,18 @@ addEventListener("keydown", (e) => {
 
 //start();
 
-function welcome() {
-  ctx.fillStyle = "black";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "40px 'Press Start 2P'";
-  ctx.fillStyle = "#02F9FD";
-  ctx.fillText("**Dino Game**", 140, 100);
-  ctx.font = "25px 'Press Start 2P'";
-  ctx.fillStyle = "#FEFC2D";
-  ctx.fillText("Press Enter to start", 160, 150);
+function drawScore() {
+  ctx.font = `20px 'Press Start 2P'`;
+  ctx.fillText(`${score} lives`, 700, 50);
 }
 
-welcome();
+// function welcome() {
+//   ctx.fillStyle = "transparent";
+//   ctx.fillRect(0, 0, canvas.width, canvas.height);
+//   ctx.font = "40px 'Press Start 2P'";
+//   ctx.fillText("**Dino Game**", 140, 100);
+//   ctx.font = "25px 'Press Start 2P'";
+//   ctx.fillText("Press Enter key to start", 160, 150);
+// }
+
+// welcome();
