@@ -17,13 +17,18 @@ let images = {
   bg5: "../img/background-mars.jpg",
   meteo: "../img/Meteo.png",
   meteo2: "../img/Meteo2.png",
-  person: "../img/ninja-girl.png",
-  person2: "../img/running.png",
+  person2:
+    //"../img/ninja-girl.png",
+    "../img/mariposa-purpura-izquierda.png",
+  person:
+    //"../img/running.png",
+    "../img/mariposa-azul-derecha.png",
   lives: "../img/egg.png",
 };
 let interval; // si queremos apagar
 let frames = 0; // siempre queremos contar
 let enemies = [];
+let friends = [];
 
 // Clases
 class GameItem {
@@ -103,7 +108,6 @@ class Meteo extends GameItem {
     // sobreescribimos el draw original
     this.y += this.vy;
     this.x -= this.vx;
-
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   };
 }
@@ -112,6 +116,8 @@ class Person extends GameItem {
   constructor(config) {
     super(config);
     this.vx = config.vx ? config.vx : 2;
+    this.width = 50;
+    this.height = 50;
   }
 
   draw = () => {
@@ -121,23 +127,20 @@ class Person extends GameItem {
   };
 }
 
-// class Person2 extends GameItem {
-//   constructor(config) {
-//     super(config);
-//     this.vx = config.vx ? config.vx : 2;
-//   }
+class Person2 extends GameItem {
+  constructor(config) {
+    super(config);
+    this.vx = config.vx ? config.vx : 2;
+    this.width = 50;
+    this.height = 50;
+  }
 
-//   draw = () => {
-//     // sobreescribimos el draw original
-//     this.x -= this.vx;
-//     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-//   };
-// }
-// //Game Setup
-// let gameConfig = {
-//   enemySpeed: 3,
-//   backgroundImg: images.bg,
-// };
+  draw = () => {
+    // sobreescribimos el draw original
+    this.x -= this.vx;
+    ctx.drawImage(this.img, this.x, this.y, this.height, this.height);
+  };
+}
 
 // Instancias
 let backg = new GameItem({
@@ -145,7 +148,7 @@ let backg = new GameItem({
   width: canvas.width,
   image: images.bg,
 });
-let dino = new Dino({ x: 0, y: 450, image: images.dino });
+let dino = new Dino({ x: 0, y: 500, image: images.dino });
 
 backg.draw = function () {
   if (this.x > canvas.width) this.x = 0;
@@ -178,8 +181,10 @@ function update() {
   if (frames % 40 === 0) generateMeteo2();
   checkCollition();
 
+  if (frames % 100 === 0) generatePerson();
   drawPerson();
-  if (frames % 60 === 0) generatePerson();
+  if (frames % 100 === 0) generatePerson2();
+  drawPerson2();
 }
 
 function stop() {
@@ -240,34 +245,43 @@ function checkCollition() {
 }
 
 function generatePerson() {
-  let y = 540;
-  let x = 500;
-  let person = new Person({ x, image: images.person, vy: 5 });
+  let y = Math.floor(Math.random() * (canvas.width - 5) + 5);
+  let person = new Person({ y, image: images.person, vx: 2 });
   friends.push(person);
+  console.log(friends);
 }
 
 function drawPerson() {
+  // ya podemos dibujarlos a todos
   friends.forEach((person) => {
+    // porque es un ciclo
     person.draw();
+  });
+}
+
+function generatePerson2() {
+  let y = Math.floor(Math.random() * (canvas.width - 5) + 5);
+  let x = canvas.width;
+  let person2 = new Person2({ y, x, image: images.person2, vx: 2 });
+  friends.push(person2);
+  console.log(friends);
+}
+
+function drawPerson2() {
+  // ya podemos dibujarlos a todos
+  friends.forEach((person2) => {
+    // porque es un ciclo
+    person2.draw();
   });
 }
 
 function checkCollitionFriend() {
   friends.forEach((p) => {
     if (dino.crashWith(p)) {
-      ++score;
+      //stop(); // function aux restarle la vida y probar un brillo
     }
   });
 }
-
-// function checkCollition2() {
-//   enemies.forEach((meteo2) => {
-//     if (dino.crashWith(meteo2)) {
-//       stop();
-//       // function aux restarle la vida y probar un que se vuelva esqueleto
-//     }
-//   });
-// }
 
 // listeners
 addEventListener("keydown", (e) => {
@@ -280,3 +294,16 @@ addEventListener("keydown", (e) => {
 });
 
 //start();
+
+function welcome() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = "40px 'Press Start 2P'";
+  ctx.fillStyle = "#02F9FD";
+  ctx.fillText("**Dino Game**", 140, 100);
+  ctx.font = "25px 'Press Start 2P'";
+  ctx.fillStyle = "#FEFC2D";
+  ctx.fillText("Press Enter to start", 160, 150);
+}
+
+welcome();
