@@ -8,13 +8,13 @@ let ctx = canvas.getContext("2d");
 let images = {
   dino: "../img/dino.png",
   blackDino: "../img/black_dino.png",
-  bg:
+  bg2:
     //"../img/wallpaper2.jpg",
     "https://cdna.artstation.com/p/assets/images/images/015/107/198/large/jean-nicolas-racicot-fca-background-canyon.jpg?1547075913",
-  bg2: "../img/background-montana.jpg",
-  bg3: "../img/background-jungle.jpg",
-  bg4: "../img/background-ny.jpg",
-  bg5: "../img/background-mars.jpg",
+  bg4: "../img/background-montana.jpg",
+  bg5: "../img/background-jungle.jpg",
+  bg3: "../img/background-ny.jpg",
+  bg: "../img/background-mars.jpg",
   meteo: "../img/Meteo.png",
   meteo2: "../img/Meteo2.png",
   person2:
@@ -195,10 +195,17 @@ function update() {
   drawPerson();
   if (frames % 100 === 0) generatePerson2();
   drawPerson2();
+
+  checkScore();
 }
 
 function stop() {
   clearInterval(interval);
+  ctx.font = "50px 'Press Start 2P'";
+  ctx.fillStyle = "white";
+  ctx.fillText("Game Over", 100, 200);
+  ctx.font = "15px 'Press Start 2P'";
+  ctx.fillText("Refresh to restart", 200, 400);
 }
 
 function getRandomInt(max) {
@@ -244,13 +251,17 @@ function drawMeteos() {
   });
 }
 
+function checkScore() {
+  console.log(score);
+  if (score === 0) {
+    stop();
+  }
+}
+
 function checkCollition() {
   enemies.forEach((m) => {
     if (dino.crashWith(m)) {
       score = score - 1;
-      if (score === 0) {
-        stop();
-      }
     }
   });
 }
@@ -290,10 +301,6 @@ function checkCollitionFriend() {
   friends.forEach((p) => {
     if (dino.crashWith(p)) {
       score = score + 1;
-      if (score === 0) {
-        stop();
-      }
-      //stop();
     }
   });
 }
