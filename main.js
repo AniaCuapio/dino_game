@@ -7,16 +7,19 @@ let ctx = canvas.getContext("2d");
 // Globals
 let images = {
   dino: "../img/dino.png",
-  //dino: "../img/black_dino.png",
+  blackDino: "../img/black_dino.png",
   bg:
-    //"../img/mountains_background.jpg",
+    //"../img/wallpaper2.jpg",
     "https://cdna.artstation.com/p/assets/images/images/015/107/198/large/jean-nicolas-racicot-fca-background-canyon.jpg?1547075913",
+  bg2: "../img/background-montana.jpg",
+  bg3: "../img/background-jungle.jpg",
+  bg4: "../img/background-ny.jpg",
+  bg5: "../img/background-mars.jpg",
   meteo: "../img/Meteo.png",
   meteo2: "../img/Meteo2.png",
-  floor: "http://pixelartmaker.com/art/11f36df09b75735.png",
-  lives: "",
-  // star:
-  //   "https://www.pikpng.com/pngl/m/318-3188473_estrella-de-vida-pixel-art-mario-star-clipart.png",
+  person: "../img/ninja-girl.png",
+  person2: "../img/running.png",
+  lives: "../img/egg.png",
 };
 let interval; // si queremos apagar
 let frames = 0; // siempre queremos contar
@@ -76,8 +79,8 @@ class Dino extends GameItem {
 class Meteo2 extends GameItem {
   constructor(config) {
     super(config);
-    this.vy = config.vy ? config.vy : 2;
-    this.vx = config.vx ? config.vx : 3;
+    this.vy = config.vy ? config.vy : 3;
+    this.vx = config.vx ? config.vx : 2;
   }
 
   draw = () => {
@@ -92,8 +95,8 @@ class Meteo2 extends GameItem {
 class Meteo extends GameItem {
   constructor(config) {
     super(config);
-    this.vy = config.vy ? config.vy : 2;
-    this.vx = config.vx ? config.vx : 3;
+    this.vy = config.vy ? config.vy : 3;
+    this.vx = config.vx ? config.vx : 2;
   }
 
   draw = () => {
@@ -105,6 +108,37 @@ class Meteo extends GameItem {
   };
 }
 
+class Person extends GameItem {
+  constructor(config) {
+    super(config);
+    this.vx = config.vx ? config.vx : 2;
+  }
+
+  draw = () => {
+    // sobreescribimos el draw original
+    this.x += this.vx;
+    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+  };
+}
+
+// class Person2 extends GameItem {
+//   constructor(config) {
+//     super(config);
+//     this.vx = config.vx ? config.vx : 2;
+//   }
+
+//   draw = () => {
+//     // sobreescribimos el draw original
+//     this.x -= this.vx;
+//     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+//   };
+// }
+// //Game Setup
+// let gameConfig = {
+//   enemySpeed: 3,
+//   backgroundImg: images.bg,
+// };
+
 // Instancias
 let backg = new GameItem({
   height: canvas.height,
@@ -115,7 +149,7 @@ let dino = new Dino({ x: 0, y: 450, image: images.dino });
 
 backg.draw = function () {
   if (this.x > canvas.width) this.x = 0;
-  this.x += 0.2;
+  this.x += 0.5;
   ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   ctx.drawImage(this.img, this.x - this.width, this.y, this.width, this.height);
 };
@@ -139,11 +173,13 @@ function update() {
   // si lo quiero en mi videojuego lo tengo que meter a update
   drawMeteos();
   drawMeteos2();
-  // generate stuff:
+  // generate
   if (frames % 60 === 0) generateMeteo();
   if (frames % 40 === 0) generateMeteo2();
-
   checkCollition();
+
+  drawPerson();
+  if (frames % 60 === 0) generatePerson();
 }
 
 function stop() {
@@ -193,24 +229,45 @@ function drawMeteos() {
   });
 }
 
-let lives = [0, 1, 2];
 function checkCollition() {
-  enemies.forEach((meteo) => {
-    if (dino.crashWith(meteo)) {
+  enemies.forEach((m) => {
+    if (dino.crashWith(m)) {
+      // --score;
       stop();
       // function aux restarle la vida y probar un que se vuelva esqueleto
     }
   });
 }
 
-function checkCollition2() {
-  enemies.forEach((meteo2) => {
-    if (dino.crashWith(meteo2)) {
-      stop();
-      // function aux restarle la vida y probar un que se vuelva esqueleto
+function generatePerson() {
+  let y = 540;
+  let x = 500;
+  let person = new Person({ x, image: images.person, vy: 5 });
+  friends.push(person);
+}
+
+function drawPerson() {
+  friends.forEach((person) => {
+    person.draw();
+  });
+}
+
+function checkCollitionFriend() {
+  friends.forEach((p) => {
+    if (dino.crashWith(p)) {
+      ++score;
     }
   });
 }
+
+// function checkCollition2() {
+//   enemies.forEach((meteo2) => {
+//     if (dino.crashWith(meteo2)) {
+//       stop();
+//       // function aux restarle la vida y probar un que se vuelva esqueleto
+//     }
+//   });
+// }
 
 // listeners
 addEventListener("keydown", (e) => {
